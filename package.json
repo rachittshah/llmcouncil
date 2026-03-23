@@ -1,12 +1,12 @@
 {
-  "name": "llm-council",
+  "name": "llmcouncil",
   "version": "1.0.0",
-  "description": "Multi-LLM deliberation council — MCP server + Claude Code skill",
+  "description": "Multi LLM deliberation council. MCP server + Claude Code skill",
   "type": "module",
   "main": "dist/server.js",
   "bin": {
-    "llm-council": "dist/cli.js",
-    "llm-council-broker": "dist/broker.js"
+    "llmcouncil": "dist/cli.js",
+    "llmcouncilbroker": "dist/broker.js"
   },
   "scripts": {
     "build": "tsc",

@@ -1,23 +1,23 @@
 ---
 name: council
-description: Consult a multi-LLM council for deliberation, debate, voting, critique, or verification. Uses GPT-5, Gemini 2.5, and Claude as peers.
+description: Consult a multi LLM council for deliberation, debate, voting, critique, or verification. Uses GPT 5.4, Gemini 2.5, and Claude as peers.
 user_invocable: true
 ---
 
 # LLM Council Skill
 
-You have access to the LLM Council MCP tools. Use them to orchestrate multi-model deliberation.
+You have access to the LLM Council MCP tools. Use them to orchestrate multimodel deliberation.
 
 ## Available Tools
 
-1. **council_deliberate** — Full council deliberation with configurable protocol
-2. **council_vote** — Quick voting: all models answer, then anonymously rank each other
-3. **council_debate** — Structured debate with adaptive stopping
-4. **council_critique** — Peer critique or adversarial red-teaming
-5. **council_verify** — Multi-agent verification of an answer
-6. **council_estimate_cost** — Estimate cost before running
-7. **council_status** — Check which providers are available
-8. **council_configure** — Update default council composition
+1. **council_deliberate**. Full council deliberation with configurable protocol
+2. **council_vote**. Quick voting: all models answer, then anonymously rank each other
+3. **council_debate**. Structured debate with adaptive stopping
+4. **council_critique**. Peer critique or adversarial redteaming
+5. **council_verify**. Multi agent verification of an answer
+6. **council_estimate_cost**. Estimate cost before running
+7. **council_status**. Check which providers are available
+8. **council_configure**. Update default council composition
 
 ## Usage Patterns
 
@@ -34,14 +34,14 @@ Use `council_verify` to check if an answer is correct by having multiple models 
 Use `council_critique` with `redTeam: true` to find flaws, edge cases, and failure modes in responses.
 
 ### Full deliberation
-Use `council_deliberate` with `protocol: "synthesize"` for the chairman synthesis pattern — all models answer, then a chairman produces an authoritative synthesis.
+Use `council_deliberate` with `protocol: "synthesize"` for the chairman synthesis pattern. All models answer, then a chairman produces an authoritative synthesis.
 
 ## Best Practices (from research)
-- Scale agents (more models), not rounds (more debate turns)
-- Heterogeneous models (mix providers) outperform homogeneous ones
-- Anonymous peer review prevents model favoritism bias
-- Always check cost estimate before large council runs
-- Default council (GPT-5 + Gemini 2.5 Pro + Claude Sonnet 4.6) provides optimal diversity
+* Scale agents (more models), not rounds (more debate turns)
+* Heterogeneous models (mix providers) outperform homogeneous ones
+* Anonymous peer review prevents model favoritism bias
+* Always check cost estimate before large council runs
+* Default council (GPT 5.4 + Gemini 2.5 Pro + Claude Sonnet 4.6) provides optimal diversity
 
 ## Example Invocations
 
