@@ -108,7 +108,7 @@ export async function runCouncil(request: CouncilRequest): Promise<CouncilResult
 
       result.responses = debateResult.rounds[0]?.responses ?? [];
 
-      // Synthesize final round via chairman — runSynthesis returns string
+      // Synthesize final round via chairman
       const finalRound = debateResult.rounds[debateResult.rounds.length - 1];
       if (finalRound) {
         const synthesis = await runSynthesis(
@@ -139,14 +139,14 @@ export async function runCouncil(request: CouncilRequest): Promise<CouncilResult
       result.synthesis = synthesis;
       result.consensus = {
         answer: synthesis,
-        confidence: 0.85, // multi-model synthesis confidence
+        confidence: 0.85, // multi model synthesis confidence
         dissent: [],
       };
       break;
     }
 
     case "critique":
-    case "red-team": {
+    case "redteam": {
       const responses = await queryAllModels(models, question);
       tracker.trackResponses(responses);
 
@@ -158,10 +158,10 @@ export async function runCouncil(request: CouncilRequest): Promise<CouncilResult
       }
 
       result.responses = responses;
-      result.critique = critiqueResult.critiques.map(c => c.content).join("\n\n---\n\n");
+      result.critique = critiqueResult.critiques.map(c => c.content).join("\n\n===\n\n");
       if (critiqueResult.redTeam) {
         result.critique += "\n\n=== RED TEAM ===\n\n" +
-          critiqueResult.redTeam.map(r => r.content).join("\n\n---\n\n");
+          critiqueResult.redTeam.map(r => r.content).join("\n\n===\n\n");
       }
       break;
     }
