@@ -39,7 +39,7 @@ function buildVerificationPrompt(
 **Response from ${name}:**
 ${candidate.content}
 
-Is this response correct, complete, and well-reasoned? Reply with ONLY valid JSON (no markdown fences):
+Is this response correct, complete, and well reasoned? Reply with ONLY valid JSON (no markdown fences):
 { "verdict": true, "aspect": "correctness", "reasoning": "..." }
 
 Set "verdict" to true if the response is substantially correct, false otherwise. The "aspect" field should name what you primarily evaluated (e.g., "correctness", "completeness", "reasoning"). The "reasoning" field should explain your judgment.`;
