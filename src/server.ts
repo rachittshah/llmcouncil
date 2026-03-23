@@ -10,7 +10,7 @@ import { runCouncil } from "./council.js";
 import { CostTracker } from "./cost.js";
 // providers are checked directly via env vars in council_status
 
-// ── Module-level config override (set via council_configure) ────────
+// Module level config override (set via council_configure)
 
 let configOverride: {
   models?: ModelConfig[];
@@ -18,7 +18,7 @@ let configOverride: {
   defaultProtocol?: Protocol;
 } = {};
 
-// ── Helpers ─────────────────────────────────────────────────────────
+// Helpers
 
 function ok(result: unknown) {
   return {
@@ -43,37 +43,37 @@ function resolveChairman(chairman?: { provider: string; model: string }): ModelC
   return configOverride.chairman ?? DEFAULT_CHAIRMAN;
 }
 
-// ── Model input schema (reused across tools) ───────────────────────
+// Model input schema (reused across tools)
 
 const modelsSchema = {
   type: "array",
-  description: "Models to include in the council. Defaults to GPT-5, Gemini 2.5 Pro, Claude Sonnet 4.6.",
+  description: "Models to include in the council. Defaults to GPT 5.4, Gemini 2.5 Pro, Claude Sonnet 4.6.",
   items: {
     type: "object",
     properties: {
       provider: { type: "string", enum: ["openai", "gemini", "anthropic"], description: "LLM provider" },
       model: { type: "string", description: "Model identifier (e.g. gpt-5, gemini-2.5-pro, claude-sonnet-4-6-20250514)" },
-      label: { type: "string", description: "Anonymous label for peer review (e.g. Model-A)" },
+      label: { type: "string", description: "Anonymous label for peer review (e.g. ModelA)" },
     },
     required: ["provider", "model"],
   },
 } as const;
 
-// ── Server setup ────────────────────────────────────────────────────
+// Server setup
 
 const server = new Server(
-  { name: "llm-council", version: "1.0.0" },
+  { name: "llmcouncil", version: "1.0.0" },
   { capabilities: { tools: {} } },
 );
 
-// ── Tool definitions ────────────────────────────────────────────────
+// Tool definitions
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
     {
       name: "council_deliberate",
       description:
-        "Run a multi-LLM council deliberation. Sends the same question to multiple frontier models and combines their responses using a chosen protocol (synthesize, vote, debate, critique, red-team, or MAV verification). Returns responses, synthesis/consensus, cost breakdown, and latency.",
+        "Run a multi LLM council deliberation. Sends the same question to multiple frontier models and combines their responses using a chosen protocol (synthesize, vote, debate, critique, redteam, or MAV verification). Returns responses, synthesis/consensus, cost breakdown, and latency.",
       inputSchema: {
         type: "object",
         properties: {
@@ -81,8 +81,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           context: { type: "string", description: "Optional background context provided to all models before the question" },
           protocol: {
             type: "string",
-            enum: ["vote", "debate", "synthesize", "critique", "red-team", "mav"],
-            description: "Deliberation protocol. synthesize: chairman merges responses. vote: models rank each other. debate: multi-round argumentation. critique: peer review. red-team: adversarial critique. mav: model-as-verifier cross-check.",
+            enum: ["vote", "debate", "synthesize", "critique", "redteam", "mav"],
+            description: "Deliberation protocol. synthesize: chairman merges responses. vote: models rank each other. debate: multi round argumentation. critique: peer review. redteam: adversarial critique. mav: model as verifier cross check.",
           },
           models: modelsSchema,
           chairman: {
@@ -96,7 +96,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           },
           maxRounds: { type: "number", description: "Maximum debate rounds (debate protocol only, default: 1)" },
           anonymize: { type: "boolean", description: "Hide model identities during peer review (default: true)" },
-          adaptiveStop: { type: "boolean", description: "Enable KS-statistic early stopping for debate (default: false)" },
+          adaptiveStop: { type: "boolean", description: "Enable KS statistic early stopping for debate (default: false)" },
         },
         required: ["question"],
       },
@@ -104,7 +104,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "council_vote",
       description:
-        "Quick voting: each model answers, then all models rank each other's responses. Returns the winner by first-place votes with confidence score and dissent list.",
+        "Quick voting: each model answers, then all models rank each other's responses. Returns the winner by first place votes with confidence score and dissent list.",
       inputSchema: {
         type: "object",
         properties: {
@@ -118,7 +118,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "council_debate",
       description:
-        "Multi-round debate: models argue in rounds, optionally stopping early when responses converge (KS-statistic). Chairman synthesizes the final round into a consensus answer.",
+        "Multi round debate: models argue in rounds, optionally stopping early when responses converge (KS statistic). Chairman synthesizes the final round into a consensus answer.",
       inputSchema: {
         type: "object",
         properties: {
@@ -134,13 +134,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "council_critique",
       description:
-        "Peer critique: models answer, then critique each other's responses. Set redTeam=true for adversarial red-teaming that actively tries to find flaws, hallucinations, and failure modes.",
+        "Peer critique: models answer, then critique each other's responses. Set redTeam=true for adversarial redteaming that actively tries to find flaws, hallucinations, and failure modes.",
       inputSchema: {
         type: "object",
         properties: {
           question: { type: "string", description: "The question to critique responses for" },
           context: { type: "string", description: "Optional background context" },
-          redTeam: { type: "boolean", description: "Use adversarial red-team protocol instead of standard critique (default: false)" },
+          redTeam: { type: "boolean", description: "Use adversarial redteam protocol instead of standard critique (default: false)" },
         },
         required: ["question"],
       },
@@ -148,7 +148,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "council_verify",
       description:
-        "MAV (Model-as-Verifier): cross-checks an answer using multiple models. Each model scores the candidate answer, and the highest-scored response becomes the verified output. Use this to fact-check or validate an existing answer.",
+        "MAV (Model as Verifier): cross checks an answer using multiple models. Each model scores the candidate answer, and the highest scored response becomes the verified output. Use this to fact check or validate an existing answer.",
       inputSchema: {
         type: "object",
         properties: {
@@ -161,7 +161,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "council_estimate_cost",
       description:
-        "Estimate the USD cost of a council run before executing it. Returns per-model and total cost estimates based on token counts and current pricing.",
+        "Estimate the USD cost of a council run before executing it. Returns per model and total cost estimates based on token counts and current pricing.",
       inputSchema: {
         type: "object",
         properties: {
@@ -201,7 +201,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           },
           defaultProtocol: {
             type: "string",
-            enum: ["vote", "debate", "synthesize", "critique", "red-team", "mav"],
+            enum: ["vote", "debate", "synthesize", "critique", "redteam", "mav"],
             description: "Default protocol for council_deliberate calls",
           },
         },
@@ -210,14 +210,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   ],
 }));
 
-// ── Tool dispatch ───────────────────────────────────────────────────
+// Tool dispatch
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
     switch (name) {
-      // ── council_deliberate ──────────────────────────────────────
+      // council_deliberate
       case "council_deliberate": {
         const a = args as {
           question: string;
@@ -243,7 +243,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(result);
       }
 
-      // ── council_vote ────────────────────────────────────────────
+      // council_vote
       case "council_vote": {
         const a = args as { question: string; context?: string; models?: ModelConfig[] };
 
@@ -257,7 +257,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(result);
       }
 
-      // ── council_debate ──────────────────────────────────────────
+      // council_debate
       case "council_debate": {
         const a = args as {
           question: string;
@@ -280,13 +280,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(result);
       }
 
-      // ── council_critique ────────────────────────────────────────
+      // council_critique
       case "council_critique": {
         const a = args as { question: string; context?: string; redTeam?: boolean };
 
         const config: CouncilConfig = {
           models: resolveModels(),
-          protocol: a.redTeam ? "red-team" : "critique",
+          protocol: a.redTeam ? "redteam" : "critique",
           anonymize: true,
         };
 
@@ -294,7 +294,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(result);
       }
 
-      // ── council_verify ──────────────────────────────────────────
+      // council_verify
       case "council_verify": {
         const a = args as { question: string; answer: string };
 
@@ -311,7 +311,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok(result);
       }
 
-      // ── council_estimate_cost ───────────────────────────────────
+      // council_estimate_cost
       case "council_estimate_cost": {
         const a = args as {
           protocol: string;
@@ -329,7 +329,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const tracker = new CostTracker();
         const estimatedTotal = tracker.estimateCost(models, avgInput, avgOutput, rounds);
 
-        // Build per-model breakdown
+        // Build per model breakdown
         const perModel = models.map((m) => {
           const pricing = PRICING[m.model] ?? { inputPer1M: 2.0, outputPer1M: 10.0 };
           const costPerRound =
@@ -347,7 +347,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         let protocolMultiplier = 1;
         if (a.protocol === "vote") protocolMultiplier = 2; // answer + voting round
         if (a.protocol === "debate") protocolMultiplier = rounds;
-        if (a.protocol === "critique" || a.protocol === "red-team") protocolMultiplier = 2;
+        if (a.protocol === "critique" || a.protocol === "redteam") protocolMultiplier = 2;
         if (a.protocol === "mav") protocolMultiplier = 2; // answer + verification
 
         return ok({
@@ -361,7 +361,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         });
       }
 
-      // ── council_status ──────────────────────────────────────────
+      // council_status
       case "council_status": {
         const providerModels: Record<string, string[]> = {
           openai: Object.keys(PRICING).filter((k) => k.startsWith("gpt") || k.startsWith("o3") || k.startsWith("o4")),
@@ -378,7 +378,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return ok({
           providers,
           currentConfig: {
-            models: configOverride.models ?? "default (GPT-5, Gemini 2.5 Pro, Claude Sonnet 4.6)",
+            models: configOverride.models ?? "default (GPT 5.4, Gemini 2.5 Pro, Claude Sonnet 4.6)",
             chairman: configOverride.chairman ?? "default (Claude Sonnet 4.6)",
             defaultProtocol: configOverride.defaultProtocol ?? "synthesize",
           },
@@ -386,7 +386,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         });
       }
 
-      // ── council_configure ───────────────────────────────────────
+      // council_configure
       case "council_configure": {
         const a = args as {
           models?: ModelConfig[];
@@ -422,7 +422,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-// ── Start ───────────────────────────────────────────────────────────
+// Start
 
 async function main() {
   const transport = new StdioServerTransport();
